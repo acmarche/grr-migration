@@ -1,0 +1,28 @@
+{
+  "name": "jfsenechal/grr-migration",
+  "type": "library",
+  "description": "Grr Migration",
+  "keywords": [],
+  "homepage": "https://grr.com",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Jfsenechal",
+      "email": "jfsenechal@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.3"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Grr\\Core\\": ""
+    },
+    "exclude-from-classmap": [
+      "/Tests/"
+    ]
+  }
+}
