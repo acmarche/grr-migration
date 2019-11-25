@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Command;
+namespace Grr\GrrBundleCommand;
 
 use RuntimeException;
 use DateTime;
-use App\Entity\Area;
-use App\Entity\Entry;
-use App\Migration\MigrationFactory;
-use App\Migration\MigrationUtil;
-use App\Migration\RequestData;
-use App\Periodicity\GeneratorEntry;
-use App\Periodicity\PeriodicityDaysProvider;
+use Grr\GrrBundle\Entity\Area;
+use Grr\GrrBundle\Entity\Entry;
+use Grr\Migration\MigrationFactory;
+use Grr\Migration\MigrationUtil;
+use Grr\Migration\RequestData;
+use Grr\GrrBundle\Periodicity\GeneratorEntry;
+use Grr\GrrBundle\Periodicity\PeriodicityDaysProvider;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
