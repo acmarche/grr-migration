@@ -1,6 +1,6 @@
 <?php
 
-namespace Grr\GrrBundleCommand;
+namespace Grr\Migration\Command;
 
 use RuntimeException;
 use DateTime;

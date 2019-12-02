@@ -1,6 +1,6 @@
 <?php
 
-namespace Grr\Command;
+namespace Grr\Migration\Command;
 
 use Grr\Migration\MigrationChecker;
 use Grr\Migration\MigrationUtil;
