@@ -2,9 +2,9 @@
 
 namespace Grr\Migration\Command;
 
+use Grr\GrrBundle\Repository\EntryRepository;
 use Grr\Migration\MigrationChecker;
 use Grr\Migration\MigrationUtil;
-use Grr\GrrBundle\Repository\EntryRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -117,7 +117,7 @@ class CheckCommand extends Command
                 $args
             );
 
-            if ($entry === null) {
+            if (null === $entry) {
                 ++$count;
                 $io->error($data['name'].' '.$startTime->format('d-m-Y'));
             } else {

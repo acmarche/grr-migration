@@ -10,11 +10,11 @@
 
 namespace Grr\Migration;
 
+use Grr\Core\Security\SecurityRole;
 use Grr\GrrBundle\Manager\AuthorizationManager;
 use Grr\GrrBundle\Repository\RoomRepository;
 use Grr\GrrBundle\Repository\Security\AuthorizationRepository;
 use Grr\GrrBundle\Repository\Security\UserRepository;
-use Grr\Core\Security\SecurityRole;
 
 class MigrationChecker
 {

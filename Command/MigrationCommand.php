@@ -2,17 +2,17 @@
 
 namespace Grr\Migration\Command;
 
-use RuntimeException;
 use DateTime;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\ORM\EntityManagerInterface;
 use Grr\GrrBundle\Entity\Area;
 use Grr\GrrBundle\Entity\Entry;
+use Grr\GrrBundle\Periodicity\GeneratorEntry;
+use Grr\GrrBundle\Periodicity\PeriodicityDaysProvider;
 use Grr\Migration\MigrationFactory;
 use Grr\Migration\MigrationUtil;
 use Grr\Migration\RequestData;
-use Grr\GrrBundle\Periodicity\GeneratorEntry;
-use Grr\GrrBundle\Periodicity\PeriodicityDaysProvider;
-use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -157,7 +157,7 @@ class MigrationCommand extends Command
         $questionDate->setValidator(
             function ($date) {
                 if (null === $date) {
-                    return (int)$date;
+                    return (int) $date;
                 }
 
                 if (!$date = DateTime::createFromFormat('Y-m-d', $date)) {
@@ -322,10 +322,10 @@ class MigrationCommand extends Command
             $entry = $this->migrationFactory->createEntry($this->resolveTypeEntries, $data);
             $room = $this->migrationUtil->transformToRoom($this->resolveRooms, $data['room_id']);
 
-            if ($room !== null) {
+            if (null !== $room) {
                 $entry->setRoom($room);
                 $this->entityManager->persist($entry);
-                $repeatId = (int)$data['repeat_id'];
+                $repeatId = (int) $data['repeat_id'];
 
                 if ($data['entry_type'] >= 1) { // il s'agit d'une reservation a laquelle est associee une periodicite
                 }
@@ -370,13 +370,13 @@ class MigrationCommand extends Command
         foreach ($progressBar->iterate($users) as $data) {
             $authorization = $this->migrationFactory->createAuthorization($data);
             $user = $this->migrationUtil->transformToUser($data['login']);
-            if ($user === null) {
+            if (null === $user) {
                 $this->io->error('Utilisateur non trouvé pour l\'ajouter en tant que area admin:'.$data['username']);
                 continue;
             }
             $authorization->setUser($user);
             $area = $this->migrationUtil->transformToArea($this->areas, $data['id_area']);
-            if ($area === null) {
+            if (null === $area) {
                 $this->io->error('Area non trouvé pour l\'ajouter en tant que area admin: '.$data['id_area']);
                 continue;
             }
@@ -399,14 +399,14 @@ class MigrationCommand extends Command
             $authorization = $this->migrationFactory->createAuthorization($data);
             $user = $this->migrationUtil->transformToUser($data['login']);
 
-            if ($user === null) {
+            if (null === $user) {
                 $this->io->note('Utilisateur non trouvé: '.$data['login']);
                 continue;
             }
             $authorization->setUser($user);
             $room = $this->migrationUtil->transformToRoom($this->resolveRooms, $data['id_room']);
 
-            if ($room === null) {
+            if (null === $room) {
                 $this->io->note('Room non trouvé: '.$data['id_room']);
                 continue;
             }

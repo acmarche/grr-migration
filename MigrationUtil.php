@@ -10,8 +10,12 @@
 
 namespace Grr\Migration;
 
-use Exception;
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use DateTime;
+use Exception;
+use Grr\Core\Security\SecurityRole;
+use Grr\Core\Setting\SettingsRoom;
 use Grr\GrrBundle\Entity\Area;
 use Grr\GrrBundle\Entity\EntryType;
 use Grr\GrrBundle\Entity\Room;
@@ -22,10 +26,6 @@ use Grr\GrrBundle\Repository\EntryTypeRepository;
 use Grr\GrrBundle\Repository\RoomRepository;
 use Grr\GrrBundle\Repository\Security\AuthorizationRepository;
 use Grr\GrrBundle\Repository\Security\UserRepository;
-use Grr\Core\Security\SecurityRole;
-use Grr\Core\Setting\SettingsRoom;
-use Carbon\Carbon;
-use Carbon\CarbonInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -120,7 +120,7 @@ class MigrationUtil
 
         return array_map(
             function ($a) use ($pattern, $replacements): int {
-                return (int)preg_replace($pattern, $replacements, $a);
+                return (int) preg_replace($pattern, $replacements, $a);
             },
             $tab
         );
@@ -145,7 +145,7 @@ class MigrationUtil
         $days = [];
         $tab = str_split(strtolower($datas), 1);
         foreach ($tab as $key => $data) {
-            if (1 === (int)$data) {
+            if (1 === (int) $data) {
                 $days[] = $key;
             }
         }
@@ -175,7 +175,7 @@ class MigrationUtil
             if ($data['id'] == $areaId) {
                 $nameArea = $data['area_name'];
                 $area = $this->areaRepository->findOneBy(['name' => $nameArea]);
-                if ($area !== null) {
+                if (null !== $area) {
                     return $area;
                 }
             }
@@ -243,7 +243,7 @@ class MigrationUtil
         if ('' == $data['email']) {
             return 'Pas de mail pour '.$data['login'];
         }
-        if ($this->userRepository->findOneBy(['email' => $data['email']]) !== null) {
+        if (null !== $this->userRepository->findOneBy(['email' => $data['email']])) {
             return $data['login'].' : Il exsite déjà un utilisateur avec cette email: '.$data['email'];
         }
 
@@ -252,7 +252,7 @@ class MigrationUtil
 
     public function checkAuthorizationRoom(UserInterface $user, Room $room): ?string
     {
-        if ($this->authorizationRepository->findOneBy(['user' => $user, 'room' => $room]) !== null) {
+        if (null !== $this->authorizationRepository->findOneBy(['user' => $user, 'room' => $room])) {
             return $user->getUsername().' à déjà un rôle pour la room: '.$room->getName();
         }
 
@@ -261,7 +261,7 @@ class MigrationUtil
 
     public function convertToUf8(?string $text = null): ?string
     {
-        if ($text === null) {
+        if (null === $text) {
             return null;
         }
         $charset = mb_detect_encoding($text, null, true);
@@ -315,7 +315,7 @@ class MigrationUtil
         $tab_couleur[27] = '#AA5050';
         $tab_couleur[28] = '#FFBB20';
 
-        if ($index !== 0) {
+        if (0 !== $index) {
             return $tab_couleur[$index];
         }
 
@@ -331,7 +331,6 @@ class MigrationUtil
 
     /**
      * @param string $start_time 2019-11-14 15:03:18
-     * @return DateTime
      */
     public function converToDateTimeFromString(string $dateString): DateTime
     {
@@ -340,7 +339,6 @@ class MigrationUtil
 
         return $date->toDateTime();
     }
-
 
     public function convertToTypeEntry(array $resolveTypes, string $letter): ?EntryType
     {

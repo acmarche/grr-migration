@@ -11,6 +11,7 @@
 namespace Grr\Migration;
 
 use DateTime;
+use Grr\Core\Periodicity\PeriodicityConstant;
 use Grr\GrrBundle\Entity\Area;
 use Grr\GrrBundle\Entity\Entry;
 use Grr\GrrBundle\Entity\EntryType;
@@ -18,7 +19,6 @@ use Grr\GrrBundle\Entity\Periodicity;
 use Grr\GrrBundle\Entity\Room;
 use Grr\GrrBundle\Entity\Security\Authorization;
 use Grr\GrrBundle\Entity\Security\User;
-use Grr\Core\Periodicity\PeriodicityConstant;
 
 class MigrationFactory
 {
