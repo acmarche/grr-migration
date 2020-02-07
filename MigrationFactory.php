@@ -96,8 +96,9 @@ class MigrationFactory
         $entry->setCreatedAt($this->migrationUtil->converToDateTimeFromString($data['timestamp']));
         $entry->setUpdatedAt(new DateTime());
         $entry->setCreatedBy($data['create_by']);
-        $entry->setBeneficiaire($data['beneficiaire_ext']);
-        $entry->setBeneficiaireExt($data['beneficiaire']);
+        $entry->setReservedFor($data['beneficiaire_ext']);
+        //todo cest quoi exterieur
+        //$entry->setBeneficiaireExt($data['beneficiaire']);
         $entry->setType($this->migrationUtil->convertToTypeEntry($resolveTypeEntries, $data['type']));
         $entry->setDescription($this->migrationUtil->convertToUf8($data['description']));
         $entry->setStatutEntry($data['statut_entry']);
