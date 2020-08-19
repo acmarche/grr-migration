@@ -7,7 +7,6 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManagerInterface;
 use Grr\GrrBundle\Entity\Area;
 use Grr\GrrBundle\Entity\Entry;
-use Grr\GrrBundle\Periodicity\GeneratorEntry;
 use Grr\GrrBundle\Periodicity\PeriodicityDaysProvider;
 use Grr\Migration\MigrationFactory;
 use Grr\Migration\MigrationUtil;
@@ -81,10 +80,6 @@ class MigrationCommand extends Command
      */
     private $periodicityDaysProvider;
     /**
-     * @var GeneratorEntry
-     */
-    private $generatorEntry;
-    /**
      * @var array
      */
     private $resolveRepeats = [];
@@ -94,8 +89,7 @@ class MigrationCommand extends Command
         EntityManagerInterface $entityManager,
         MigrationUtil $migrationUtil,
         MigrationFactory $migrationFactory,
-        PeriodicityDaysProvider $periodicityDaysProvider,
-        GeneratorEntry $generatorEntry
+        PeriodicityDaysProvider $periodicityDaysProvider
     ) {
         parent::__construct();
         $this->requestData = $requestData;
@@ -103,7 +97,6 @@ class MigrationCommand extends Command
         $this->migrationUtil = $migrationUtil;
         $this->migrationFactory = $migrationFactory;
         $this->periodicityDaysProvider = $periodicityDaysProvider;
-        $this->generatorEntry = $generatorEntry;
     }
 
     protected function configure(): void
@@ -157,7 +150,7 @@ class MigrationCommand extends Command
         $questionDate->setValidator(
             function ($date) {
                 if (null === $date) {
-                    return (int) $date;
+                    return (int)$date;
                 }
 
                 if (!$date = DateTime::createFromFormat('Y-m-d', $date)) {
@@ -325,7 +318,7 @@ class MigrationCommand extends Command
             if (null !== $room) {
                 $entry->setRoom($room);
                 $this->entityManager->persist($entry);
-                $repeatId = (int) $data['repeat_id'];
+                $repeatId = (int)$data['repeat_id'];
 
                 if ($data['entry_type'] >= 1) { // il s'agit d'une reservation a laquelle est associee une periodicite
                 }
