@@ -14,7 +14,7 @@ use DateTime;
 use Grr\Core\Periodicity\PeriodicityConstant;
 use Grr\GrrBundle\Entity\Area;
 use Grr\GrrBundle\Entity\Entry;
-use Grr\GrrBundle\Entity\EntryType;
+use Grr\GrrBundle\Entity\TypeEntry;
 use Grr\GrrBundle\Entity\Periodicity;
 use Grr\GrrBundle\Entity\Room;
 use Grr\GrrBundle\Entity\Security\Authorization;
@@ -123,9 +123,9 @@ class MigrationFactory
         return $periodicity;
     }
 
-    public function createTypeEntry(array $data): EntryType
+    public function createTypeEntry(array $data): TypeEntry
     {
-        $type = new EntryType();
+        $type = new TypeEntry();
         $type->setName($data['type_name']);
         $type->setOrderDisplay($data['order_display']);
         $type->setColor($this->migrationUtil->tabColor($data['couleur']));

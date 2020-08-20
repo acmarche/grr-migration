@@ -17,12 +17,12 @@ use Exception;
 use Grr\Core\Security\SecurityRole;
 use Grr\Core\Setting\SettingsRoom;
 use Grr\GrrBundle\Entity\Area;
-use Grr\GrrBundle\Entity\EntryType;
+use Grr\GrrBundle\Entity\TypeEntry;
 use Grr\GrrBundle\Entity\Room;
 use Grr\GrrBundle\Entity\Security\User;
 use Grr\GrrBundle\Repository\AreaRepository;
 use Grr\GrrBundle\Repository\EntryRepository;
-use Grr\GrrBundle\Repository\EntryTypeRepository;
+use Grr\GrrBundle\Repository\TypeEntryRepository;
 use Grr\GrrBundle\Repository\RoomRepository;
 use Grr\GrrBundle\Repository\Security\AuthorizationRepository;
 use Grr\GrrBundle\Repository\Security\UserRepository;
@@ -51,9 +51,9 @@ class MigrationUtil
      */
     public $userRepository;
     /**
-     * @var EntryTypeRepository
+     * @var TypeEntryRepository
      */
-    private $entryTypeRepository;
+    private $typeEntryRepository;
     /**
      * @var AuthorizationRepository
      */
@@ -72,7 +72,7 @@ class MigrationUtil
         AreaRepository $areaRepository,
         RoomRepository $roomRepository,
         UserRepository $userRepository,
-        EntryTypeRepository $entryTypeRepository,
+        TypeEntryRepository $typeEntryRepository,
         EntryRepository $entryRepository,
         AuthorizationRepository $authorizationRepository,
         ParameterBagInterface $parameterBag
@@ -81,7 +81,7 @@ class MigrationUtil
         $this->areaRepository = $areaRepository;
         $this->roomRepository = $roomRepository;
         $this->userRepository = $userRepository;
-        $this->entryTypeRepository = $entryTypeRepository;
+        $this->entryTypeRepository = $typeEntryRepository;
         $this->authorizationRepository = $authorizationRepository;
         $this->entryRepository = $entryRepository;
         $this->parameterBag = $parameterBag;
@@ -340,7 +340,7 @@ class MigrationUtil
         return $date->toDateTime();
     }
 
-    public function convertToTypeEntry(array $resolveTypes, string $letter): ?EntryType
+    public function convertToTypeEntry(array $resolveTypes, string $letter): ?TypeEntry
     {
         if (isset($resolveTypes[$letter])) {
             return $resolveTypes[$letter];

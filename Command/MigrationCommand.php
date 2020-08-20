@@ -211,7 +211,7 @@ class MigrationCommand extends Command
         $this->handleArea();
         $this->io->newLine();
         $this->io->section('Importation des types d\'entrée');
-        $this->handleEntryType();
+        $this->handleTypeEntry();
         $this->io->newLine();
         $this->io->section('Importation des utilisateurs');
         $this->handleUser();
@@ -265,7 +265,7 @@ class MigrationCommand extends Command
         }
     }
 
-    protected function handleEntryType(): void
+    protected function handleTypeEntry(): void
     {
         $types = $this->migrationUtil->decompress($this->io, $this->requestData->getTypesEntry(), 'entry_type');
         $progressBar = new ProgressBar($this->output);
