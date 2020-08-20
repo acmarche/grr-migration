@@ -150,7 +150,7 @@ class MigrationCommand extends Command
         $questionDate->setValidator(
             function ($date) {
                 if (null === $date) {
-                    return (int)$date;
+                    return (int) $date;
                 }
 
                 if (!$date = DateTime::createFromFormat('Y-m-d', $date)) {
@@ -318,7 +318,7 @@ class MigrationCommand extends Command
             if (null !== $room) {
                 $entry->setRoom($room);
                 $this->entityManager->persist($entry);
-                $repeatId = (int)$data['repeat_id'];
+                $repeatId = (int) $data['repeat_id'];
 
                 if ($data['entry_type'] >= 1) { // il s'agit d'une reservation a laquelle est associee une periodicite
                 }
