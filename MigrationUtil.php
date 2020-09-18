@@ -14,18 +14,18 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTime;
 use Exception;
+use Grr\Core\Contrat\Repository\AreaRepositoryInterface;
+use Grr\Core\Contrat\Repository\EntryRepositoryInterface;
+use Grr\Core\Contrat\Repository\RoomRepositoryInterface;
+use Grr\Core\Contrat\Repository\Security\AuthorizationRepositoryInterface;
+use Grr\Core\Contrat\Repository\Security\UserRepositoryInterface;
+use Grr\Core\Contrat\Repository\TypeEntryRepositoryInterface;
 use Grr\Core\Security\SecurityRole;
-use Grr\Core\Setting\SettingsRoom;
+use Grr\Core\Setting\Room\SettingsRoom;
 use Grr\GrrBundle\Entity\Area;
 use Grr\GrrBundle\Entity\Room;
 use Grr\GrrBundle\Entity\Security\User;
 use Grr\GrrBundle\Entity\TypeEntry;
-use Grr\GrrBundle\Repository\AreaRepository;
-use Grr\GrrBundle\Repository\EntryRepository;
-use Grr\GrrBundle\Repository\RoomRepository;
-use Grr\GrrBundle\Repository\Security\AuthorizationRepository;
-use Grr\GrrBundle\Repository\Security\UserRepository;
-use Grr\GrrBundle\Repository\TypeEntryRepository;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -34,34 +34,36 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class MigrationUtil
 {
+
+
     /**
      * @var UserPasswordEncoderInterface
      */
-    public $passwordEncoder;
+    private $passwordEncoder;
     /**
-     * @var AreaRepository
+     * @var AreaRepositoryInterface
      */
-    public $areaRepository;
+    private $areaRepository;
     /**
-     * @var RoomRepository
+     * @var RoomRepositoryInterface
      */
-    public $roomRepository;
+    private $roomRepository;
     /**
-     * @var UserRepository
+     * @var UserRepositoryInterface
      */
-    public $userRepository;
+    private $userRepository;
     /**
-     * @var TypeEntryRepository
+     * @var TypeEntryRepositoryInterface
      */
     private $typeEntryRepository;
     /**
-     * @var AuthorizationRepository
+     * @var EntryRepositoryInterface
+     */
+    private $entryRepository;
+    /**
+     * @var AuthorizationRepositoryInterface
      */
     private $authorizationRepository;
-    /**
-     * @var EntryRepository
-     */
-    public $entryRepository;
     /**
      * @var ParameterBagInterface
      */
@@ -69,21 +71,21 @@ class MigrationUtil
 
     public function __construct(
         UserPasswordEncoderInterface $passwordEncoder,
-        AreaRepository $areaRepository,
-        RoomRepository $roomRepository,
-        UserRepository $userRepository,
-        TypeEntryRepository $typeEntryRepository,
-        EntryRepository $entryRepository,
-        AuthorizationRepository $authorizationRepository,
+        AreaRepositoryInterface $areaRepository,
+        RoomRepositoryInterface $roomRepository,
+        UserRepositoryInterface $userRepository,
+        TypeEntryRepositoryInterface $typeEntryRepository,
+        EntryRepositoryInterface $entryRepository,
+        AuthorizationRepositoryInterface $authorizationRepository,
         ParameterBagInterface $parameterBag
     ) {
         $this->passwordEncoder = $passwordEncoder;
         $this->areaRepository = $areaRepository;
         $this->roomRepository = $roomRepository;
         $this->userRepository = $userRepository;
-        $this->entryTypeRepository = $typeEntryRepository;
-        $this->authorizationRepository = $authorizationRepository;
+        $this->typeEntryRepository = $typeEntryRepository;
         $this->entryRepository = $entryRepository;
+        $this->authorizationRepository = $authorizationRepository;
         $this->parameterBag = $parameterBag;
     }
 
