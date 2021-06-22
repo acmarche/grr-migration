@@ -20,18 +20,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class RequestData
 {
-    /**
-     * @var HttpClientInterface
-     */
-    private $httpClient;
-    /**
-     * @var string
-     */
-    private $base_url;
-    /**
-     * @var MigrationUtil
-     */
-    private $migrationUtil;
+    private ?HttpClientInterface $httpClient = null;
+    private ?string $base_url = null;
+    private MigrationUtil $migrationUtil;
 
     public function __construct(MigrationUtil $migrationUtil)
     {
@@ -41,7 +32,7 @@ class RequestData
     private function setBaseUrl(string $url): void
     {
         $url = rtrim($url, '/');
-        $this->base_url = $url.DIRECTORY_SEPARATOR.'migration'.DIRECTORY_SEPARATOR;
+        $this->base_url = $url . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR;
     }
 
     public function connect(string $url, string $user, string $password): void
@@ -123,7 +114,7 @@ class RequestData
         }
 
         try {
-            $response = $this->httpClient->request('GET', $this->base_url.$url, $args);
+            $response = $this->httpClient->request('GET', $this->base_url . $url, $args);
         } catch (TransportExceptionInterface $e) {
             return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
         }
@@ -131,7 +122,7 @@ class RequestData
         try {
             if (200 !== $response->getStatusCode()) {
                 return json_encode(
-                    ['error' => 'Code erreur request'.$response->getStatusCode()],
+                    ['error' => 'Code erreur request' . $response->getStatusCode()],
                     JSON_THROW_ON_ERROR,
                     512
                 );
@@ -140,7 +131,7 @@ class RequestData
             return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
         }
 
-        $fileHandler = fopen($this->migrationUtil->getCacheDirectory().$jsonfile, 'wb');
+        $fileHandler = fopen($this->migrationUtil->getCacheDirectory() . $jsonfile, 'wb');
 
         foreach ($this->httpClient->stream($response) as $chunk) {
             try {
@@ -175,7 +166,7 @@ class RequestData
         }
 
         try {
-            $response = $this->httpClient->request('GET', $this->base_url.$file, $args);
+            $response = $this->httpClient->request('GET', $this->base_url . $file, $args);
             try {
                 return $response->getContent();
             } catch (ClientExceptionInterface $e) {
@@ -195,11 +186,11 @@ class RequestData
     /**
      * @param $jsonfile
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function checkDownload($jsonfile): void
     {
-        $data = json_decode(file_get_contents($this->migrationUtil->getCacheDirectory().$jsonfile), true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode(file_get_contents($this->migrationUtil->getCacheDirectory() . $jsonfile), true, 512, JSON_THROW_ON_ERROR);
 
         if (isset($data['error'])) {
             throw new Exception($data['error']);

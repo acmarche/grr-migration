@@ -27,62 +27,28 @@ class MigrationCommand extends Command
      * @var string
      */
     protected static $defaultName = 'grr:migration';
-    /**
-     * @var RequestData
-     */
-    private $requestData;
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
-    /**
-     * @var array|null
-     */
-    private $rooms;
-    /**
-     * @var MigrationUtil
-     */
-    private $migrationUtil;
-    /**
-     * @var array|null
-     */
-    private $areas;
-    /**
-     * @var MigrationFactory
-     */
-    private $migrationFactory;
-    /**
-     * @var OutputInterface
-     */
-    private $output;
+    private RequestData $requestData;
+    private EntityManagerInterface $entityManager;
+    private ?SymfonyStyle $io = null;
+    private ?array $rooms = null;
+    private MigrationUtil $migrationUtil;
+    private ?array $areas = null;
+    private MigrationFactory $migrationFactory;
+    private ?OutputInterface $output = null;
     /**
      * Fait la correspondance entre l'ancien id et le nouveau id des rooms.
-     *
-     * @var array
      */
-    private $resolveRooms = [];
+    private array $resolveRooms = [];
     /**
      * Fait la correspondance entre l'ancien id et le nouveau id des types d'entrées.
-     *
-     * @var array
      */
-    private $resolveTypeEntries = [];
+    private array $resolveTypeEntries = [];
     /**
      * @var array
      */
     private $repeats;
-    /**
-     * @var PeriodicityDaysProvider
-     */
-    private $periodicityDaysProvider;
-    /**
-     * @var array
-     */
-    private $resolveRepeats = [];
+    private PeriodicityDaysProvider $periodicityDaysProvider;
+    private array $resolveRepeats = [];
 
     public function __construct(
         RequestData $requestData,
@@ -119,12 +85,9 @@ class MigrationCommand extends Command
         $password = $input->getArgument('password');
         $url = $input->getArgument('url');
 
-        if ($parts = parse_url($url)) {
-            if (!isset($parts['scheme'])) {
-                $this->io->error(sprintf('L\'url n\'est pas valide: %s', $url));
-
-                return 1;
-            }
+        if (($parts = parse_url($url)) && !isset($parts['scheme'])) {
+            $this->io->error(sprintf('L\'url n\'est pas valide: %s', $url));
+            return 1;
         }
 
         if (!$password) {
@@ -164,7 +127,7 @@ class MigrationCommand extends Command
         $date = $helper->ask($input, $output, $questionDate);
 
         if ($date) {
-            $this->io->success('Date choisie : '.$date->format('Y-m-d'));
+            $this->io->success('Date choisie : ' . $date->format('Y-m-d'));
         }
 
         $purger = new ORMPurger($this->entityManager);
@@ -175,7 +138,7 @@ class MigrationCommand extends Command
         $this->requestData->connect($url, $user, $password);
 
         $this->io->section(
-            'Téléchargement des entries et periodicities dans le dossier: '.$this->migrationUtil->getCacheDirectory()
+            'Téléchargement des entries et periodicities dans le dossier: ' . $this->migrationUtil->getCacheDirectory()
         );
         $this->io->newLine();
         $progressBar = new ProgressBar($output, 2);
@@ -204,7 +167,7 @@ class MigrationCommand extends Command
         $progressBar->finish();
         $this->io->newLine();
 
-        $fileHandler = file_get_contents($this->migrationUtil->getCacheDirectory().'repeat.json');
+        $fileHandler = file_get_contents($this->migrationUtil->getCacheDirectory() . 'repeat.json');
         $this->repeats = json_decode($fileHandler, true, 512, JSON_THROW_ON_ERROR);
 
         $this->io->section('Importation des Areas et rooms');
@@ -286,7 +249,7 @@ class MigrationCommand extends Command
 
         foreach ($progressBar->iterate($users) as $data) {
             if ($error = $this->migrationUtil->checkUser($data)) {
-                $this->io->note('Utilisateur non ajouté: '.$error);
+                $this->io->note('Utilisateur non ajouté: ' . $error);
             } else {
                 $user = $this->migrationFactory->createUser($data);
                 $user->setPassword($this->migrationUtil->transformPassword($user, $data['password']));
@@ -302,7 +265,7 @@ class MigrationCommand extends Command
 
     protected function handleEntry(): void
     {
-        $fileHandler = file_get_contents($this->migrationUtil->getCacheDirectory().'entry.json');
+        $fileHandler = file_get_contents($this->migrationUtil->getCacheDirectory() . 'entry.json');
         $entries = json_decode($fileHandler, true, 512, JSON_THROW_ON_ERROR);
 
         $progressBar = new ProgressBar($this->output);
@@ -332,7 +295,7 @@ class MigrationCommand extends Command
                 $room = null;
                 $entry = null;
             } else {
-                $this->io->error('Room non trouvé pour '.$data['name']);
+                $this->io->error('Room non trouvé pour ' . $data['name']);
 
                 return;
             }
@@ -364,13 +327,13 @@ class MigrationCommand extends Command
             $authorization = $this->migrationFactory->createAuthorization($data);
             $user = $this->migrationUtil->transformToUser($data['login']);
             if (null === $user) {
-                $this->io->error('Utilisateur non trouvé pour l\'ajouter en tant que area admin:'.$data['username']);
+                $this->io->error('Utilisateur non trouvé pour l\'ajouter en tant que area admin:' . $data['username']);
                 continue;
             }
             $authorization->setUser($user);
             $area = $this->migrationUtil->transformToArea($this->areas, $data['id_area']);
             if (null === $area) {
-                $this->io->error('Area non trouvé pour l\'ajouter en tant que area admin: '.$data['id_area']);
+                $this->io->error('Area non trouvé pour l\'ajouter en tant que area admin: ' . $data['id_area']);
                 continue;
             }
             $authorization->setArea($area);
@@ -393,14 +356,14 @@ class MigrationCommand extends Command
             $user = $this->migrationUtil->transformToUser($data['login']);
 
             if (null === $user) {
-                $this->io->note('Utilisateur non trouvé: '.$data['login']);
+                $this->io->note('Utilisateur non trouvé: ' . $data['login']);
                 continue;
             }
             $authorization->setUser($user);
             $room = $this->migrationUtil->transformToRoom($this->resolveRooms, $data['id_room']);
 
             if (null === $room) {
-                $this->io->note('Room non trouvé: '.$data['id_room']);
+                $this->io->note('Room non trouvé: ' . $data['id_room']);
                 continue;
             }
 

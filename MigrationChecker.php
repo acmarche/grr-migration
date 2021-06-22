@@ -10,30 +10,35 @@
 
 namespace Grr\Migration;
 
+use Doctrine\ORM\NonUniqueResultException;
 use Grr\Core\Security\SecurityRole;
-use Grr\GrrBundle\Manager\AuthorizationManager;
-use Grr\GrrBundle\Repository\RoomRepository;
-use Grr\GrrBundle\Repository\Security\AuthorizationRepository;
-use Grr\GrrBundle\Repository\Security\UserRepository;
+use Grr\GrrBundle\Authorization\Manager\AuthorizationManager;
+use Grr\GrrBundle\Authorization\Repository\AuthorizationRepository;
+use Grr\GrrBundle\Entity\Area;
+use Grr\GrrBundle\Entity\Room;
+use Grr\GrrBundle\Entity\Security\Authorization;
+use Grr\GrrBundle\Entity\Security\User;
+use Grr\GrrBundle\Room\Repository\RoomRepository;
+use Grr\GrrBundle\User\Repository\UserRepository;
 
 class MigrationChecker
 {
     /**
      * @var UserRepository
      */
-    private $userRepository;
+    private UserRepository $userRepository;
     /**
      * @var AuthorizationRepository
      */
-    private $authorizationRepository;
+    private AuthorizationRepository $authorizationRepository;
     /**
      * @var RoomRepository
      */
-    private $roomRepository;
+    private RoomRepository $roomRepository;
     /**
      * @var AuthorizationManager
      */
-    private $authorizationManager;
+    private AuthorizationManager $authorizationManager;
 
     public function __construct(
         UserRepository $userRepository,
@@ -52,9 +57,9 @@ class MigrationChecker
      * et si celui-ci est mis en tant que administrateur ou pas d'une room
      * de cet area.
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return Area[][]|Room[][]|Authorization[][]|User[][]|null[][]
+     * @throws NonUniqueResultException
      *
-     * @return \Grr\GrrBundle\Entity\Area[][]|\Grr\GrrBundle\Entity\Room[][]|\Grr\GrrBundle\Entity\Security\Authorization[][]|\Grr\GrrBundle\Entity\Security\User[][]|null[][]
      */
     public function checkAreaAndRoomAdministrator(): array
     {
@@ -83,7 +88,7 @@ class MigrationChecker
     }
 
     /**
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function deleteDoublon(): void
     {

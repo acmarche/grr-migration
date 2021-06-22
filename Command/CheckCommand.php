@@ -2,7 +2,7 @@
 
 namespace Grr\Migration\Command;
 
-use Grr\GrrBundle\Repository\EntryRepository;
+use Grr\GrrBundle\Entry\Repository\EntryRepository;
 use Grr\Migration\MigrationChecker;
 use Grr\Migration\MigrationUtil;
 use Symfony\Component\Console\Command\Command;
@@ -19,26 +19,14 @@ class CheckCommand extends Command
      * @var string
      */
     protected static $defaultName = 'grr:check';
-    /**
-     * @var MigrationChecker
-     */
-    private $migrationChecker;
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
-    /**
-     * @var OutputInterface
-     */
-    private $output;
+    private MigrationChecker $migrationChecker;
+    private ?SymfonyStyle $io = null;
+    private ?OutputInterface $output = null;
     /**
      * @var EntryRepository
      */
-    private $entryRepository;
-    /**
-     * @var MigrationUtil
-     */
-    private $migrationUtil;
+    private EntryRepository $entryRepository;
+    private MigrationUtil $migrationUtil;
 
     public function __construct(
         MigrationChecker $migrationChecker,
@@ -104,7 +92,7 @@ class CheckCommand extends Command
             $startTime = $this->migrationUtil->converToDateTime($data['start_time']);
             $endTime = $this->migrationUtil->converToDateTime($data['end_time']);
             $room = $this->migrationUtil->transformToRoom($rooms, $data['room_id']);
-            $repeatId = (int) $data['repeat_id'];
+            $repeatId = (int)$data['repeat_id'];
 
             $args = ['startTime' => $startTime, 'endTime' => $endTime, 'name' => $name, 'room' => $room];
 
