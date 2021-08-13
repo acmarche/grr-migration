@@ -12,7 +12,6 @@ namespace Grr\Migration;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Grr\Core\Security\SecurityRole;
-use Grr\GrrBundle\Authorization\Manager\AuthorizationManager;
 use Grr\GrrBundle\Authorization\Repository\AuthorizationRepository;
 use Grr\GrrBundle\Entity\Area;
 use Grr\GrrBundle\Entity\Room;
@@ -23,33 +22,19 @@ use Grr\GrrBundle\User\Repository\UserRepository;
 
 class MigrationChecker
 {
-    /**
-     * @var UserRepository
-     */
+
     private UserRepository $userRepository;
-    /**
-     * @var AuthorizationRepository
-     */
     private AuthorizationRepository $authorizationRepository;
-    /**
-     * @var RoomRepository
-     */
     private RoomRepository $roomRepository;
-    /**
-     * @var AuthorizationManager
-     */
-    private AuthorizationManager $authorizationManager;
 
     public function __construct(
         UserRepository $userRepository,
         AuthorizationRepository $authorizationRepository,
-        AuthorizationManager $authorizationManager,
         RoomRepository $roomRepository
     ) {
         $this->userRepository = $userRepository;
         $this->authorizationRepository = $authorizationRepository;
         $this->roomRepository = $roomRepository;
-        $this->authorizationManager = $authorizationManager;
     }
 
     /**
@@ -94,8 +79,8 @@ class MigrationChecker
     {
         foreach ($this->checkAreaAndRoomAdministrator() as $data) {
             $authorization = $data['authorization'];
-            $this->authorizationManager->remove($authorization);
+            $this->authorizationRepository->remove($authorization);
         }
-        $this->authorizationManager->flush();
+        $this->authorizationRepository->flush();
     }
 }
