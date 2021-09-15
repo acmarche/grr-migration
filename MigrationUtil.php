@@ -29,12 +29,12 @@ use Grr\GrrBundle\Entity\TypeEntry;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class MigrationUtil
 {
-    private UserPasswordEncoderInterface $passwordEncoder;
+    private UserPasswordHasherInterface $passwordEncoder;
     private AreaRepositoryInterface $areaRepository;
     private RoomRepositoryInterface $roomRepository;
     private UserRepositoryInterface $userRepository;
@@ -44,7 +44,7 @@ class MigrationUtil
     private ParameterBagInterface $parameterBag;
 
     public function __construct(
-        UserPasswordEncoderInterface $passwordEncoder,
+        UserPasswordHasherInterface $passwordEncoder,
         AreaRepositoryInterface $areaRepository,
         RoomRepositoryInterface $roomRepository,
         UserRepositoryInterface $userRepository,
@@ -66,8 +66,8 @@ class MigrationUtil
     public function getCacheDirectory(): string
     {
         return $this->parameterBag->get(
-            'kernel.cache_dir'
-        ) . DIRECTORY_SEPARATOR . 'download' . DIRECTORY_SEPARATOR;
+                'kernel.cache_dir'
+            ).DIRECTORY_SEPARATOR.'download'.DIRECTORY_SEPARATOR;
     }
 
     public function clearCache(): void
@@ -95,7 +95,7 @@ class MigrationUtil
         $tab = str_split(strtolower($display_days), 1);
 
         return array_map(
-            fn ($a): int => (int) preg_replace($pattern, $replacements, $a),
+            fn($a): int => (int)preg_replace($pattern, $replacements, $a),
             $tab
         );
     }
@@ -113,13 +113,13 @@ class MigrationUtil
     public function transformRepOpt(int $id, string $datas): array
     {
         if (7 !== strlen($datas)) {
-            throw new Exception('Répétition pas 7 jours Repeat id :' . $id);
+            throw new Exception('Répétition pas 7 jours Repeat id :'.$id);
         }
 
         $days = [];
         $tab = str_split(strtolower($datas), 1);
         foreach ($tab as $key => $data) {
-            if (1 === (int) $data) {
+            if (1 === (int)$data) {
                 $days[] = $key;
             }
         }
@@ -187,7 +187,7 @@ class MigrationUtil
             return null;
         }
 
-        return $this->passwordEncoder->encodePassword($user, 123456);
+        return $this->passwordEncoder->hashPassword($user, 123456);
     }
 
     /**
@@ -215,10 +215,10 @@ class MigrationUtil
     public function checkUser($data): ?string
     {
         if ('' == $data['email']) {
-            return 'Pas de mail pour ' . $data['login'];
+            return 'Pas de mail pour '.$data['login'];
         }
         if (null !== $this->userRepository->findOneBy(['email' => $data['email']])) {
-            return $data['login'] . ' : Il exsite déjà un utilisateur avec cette email: ' . $data['email'];
+            return $data['login'].' : Il exsite déjà un utilisateur avec cette email: '.$data['email'];
         }
 
         return null;
@@ -227,7 +227,7 @@ class MigrationUtil
     public function checkAuthorizationRoom(UserInterface $user, Room $room): ?string
     {
         if (null !== $this->authorizationRepository->findOneBy(['user' => $user, 'room' => $room])) {
-            return $user->getUsername() . ' à déjà un rôle pour la room: ' . $room->getName();
+            return $user->getUsername().' à déjà un rôle pour la room: '.$room->getName();
         }
 
         return null;
@@ -357,7 +357,7 @@ class MigrationUtil
 
     public function writeFile($fileName, $content): void
     {
-        $fileHandler = fopen($this->getCacheDirectory() . $fileName, 'w');
+        $fileHandler = fopen($this->getCacheDirectory().$fileName, 'w');
         fwrite($fileHandler, $content);
         fclose($fileHandler);
     }
@@ -370,13 +370,13 @@ class MigrationUtil
         $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
         if (!is_array($data)) {
-            $io->error($type . ' La réponse doit être un json: ' . $content);
+            $io->error($type.' La réponse doit être un json: '.$content);
 
             return [];
         }
 
         if (isset($data['error'])) {
-            $io->error('Une erreur est survenue: ' . $data['error']);
+            $io->error('Une erreur est survenue: '.$data['error']);
 
             return [];
         }
