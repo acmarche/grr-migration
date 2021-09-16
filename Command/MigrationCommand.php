@@ -131,7 +131,7 @@ class MigrationCommand extends Command
         }
 
         $purger = new ORMPurger($this->entityManager);
-        // $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
+        //$purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
         $purger->purge();
         $this->migrationUtil->clearCache();
 
@@ -189,7 +189,7 @@ class MigrationCommand extends Command
         $this->handleEntry();
         $this->io->newLine();
         $this->io->section('Importation des paramètres');
-        $this->handlSetting();
+       // $this->handlSetting();
 
         //je sauvegarde les resolutions pour la commande grr:check
         $this->migrationUtil->writeFile('resolverepeat.json', serialize($this->resolveRepeats));
@@ -300,6 +300,7 @@ class MigrationCommand extends Command
                 return;
             }
         }
+        $this->entityManager->flush();
     }
 
     private function handlerPeriodicity(Entry $entry, int $id): void
@@ -313,7 +314,7 @@ class MigrationCommand extends Command
             $this->entityManager->persist($periodicity);
         }
         $entry->setPeriodicity($periodicity);
-        $this->entityManager->flush();
+      //  $this->entityManager->flush();
         $this->resolveRepeats[$id] = $periodicity;
     }
 

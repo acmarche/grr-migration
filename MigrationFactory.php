@@ -127,7 +127,7 @@ class MigrationFactory
         $type->setOrderDisplay($data['order_display']);
         $type->setColor($this->migrationUtil->tabColor($data['couleur']));
         $type->setLetter($data['type_letter']);
-        $type->setDisponible($data['disponible']);
+        $type->setAvailable($data['disponible']);
 
         return $type;
     }
