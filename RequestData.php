@@ -22,17 +22,16 @@ class RequestData
 {
     private ?HttpClientInterface $httpClient = null;
     private ?string $base_url = null;
-    private MigrationUtil $migrationUtil;
 
-    public function __construct(MigrationUtil $migrationUtil)
-    {
-        $this->migrationUtil = $migrationUtil;
+    public function __construct(
+        private MigrationUtil $migrationUtil
+    ) {
     }
 
     private function setBaseUrl(string $url): void
     {
         $url = rtrim($url, '/');
-        $this->base_url = $url . DIRECTORY_SEPARATOR . 'migration' . DIRECTORY_SEPARATOR;
+        $this->base_url = $url.\DIRECTORY_SEPARATOR.'migration'.\DIRECTORY_SEPARATOR;
     }
 
     public function connect(string $url, string $user, string $password): void
@@ -109,35 +108,43 @@ class RequestData
             'buffer' => false,
         ];
 
-        if (count($params) > 0) {
+        if ([] !== $params) {
             $args['query'] = $params;
         }
 
         try {
-            $response = $this->httpClient->request('GET', $this->base_url . $url, $args);
+            $response = $this->httpClient->request('GET', $this->base_url.$url, $args);
         } catch (TransportExceptionInterface $e) {
-            return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
+            return json_encode([
+                'error' => $e->getMessage(),
+            ], JSON_THROW_ON_ERROR, 512);
         }
 
         try {
             if (200 !== $response->getStatusCode()) {
                 return json_encode(
-                    ['error' => 'Code erreur request' . $response->getStatusCode()],
+                    [
+                        'error' => 'Code erreur request'.$response->getStatusCode(),
+                    ],
                     JSON_THROW_ON_ERROR,
                     512
                 );
             }
         } catch (TransportExceptionInterface $e) {
-            return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
+            return json_encode([
+                'error' => $e->getMessage(),
+            ], JSON_THROW_ON_ERROR, 512);
         }
 
-        $fileHandler = fopen($this->migrationUtil->getCacheDirectory() . $jsonfile, 'wb');
+        $fileHandler = fopen($this->migrationUtil->getCacheDirectory().$jsonfile, 'w');
 
         foreach ($this->httpClient->stream($response) as $chunk) {
             try {
                 fwrite($fileHandler, $chunk->getContent());
             } catch (TransportExceptionInterface $e) {
-                return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
+                return json_encode([
+                    'error' => $e->getMessage(),
+                ], JSON_THROW_ON_ERROR, 512);
             }
         }
         fclose($fileHandler);
@@ -145,7 +152,9 @@ class RequestData
         try {
             $this->checkDownload($jsonfile);
         } catch (Exception $e) {
-            return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
+            return json_encode([
+                'error' => $e->getMessage(),
+            ], JSON_THROW_ON_ERROR, 512);
         }
 
         return json_encode([], JSON_THROW_ON_ERROR);
@@ -161,25 +170,23 @@ class RequestData
             'buffer' => false,
         ];
 
-        if (count($params) > 0) {
+        if ([] !== $params) {
             $args['query'] = $params;
         }
 
         try {
-            $response = $this->httpClient->request('GET', $this->base_url . $file, $args);
+            $response = $this->httpClient->request('GET', $this->base_url.$file, $args);
             try {
                 return $response->getContent();
-            } catch (ClientExceptionInterface $e) {
-                return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
-            } catch (RedirectionExceptionInterface $e) {
-                return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
-            } catch (ServerExceptionInterface $e) {
-                return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
-            } catch (TransportExceptionInterface $e) {
-                return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
+            } catch (ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
+                return json_encode([
+                    'error' => $e->getMessage(),
+                ], JSON_THROW_ON_ERROR, 512);
             }
         } catch (TransportExceptionInterface $e) {
-            return json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512);
+            return json_encode([
+                'error' => $e->getMessage(),
+            ], JSON_THROW_ON_ERROR, 512);
         }
     }
 
@@ -190,7 +197,7 @@ class RequestData
      */
     private function checkDownload($jsonfile): void
     {
-        $data = json_decode(file_get_contents($this->migrationUtil->getCacheDirectory() . $jsonfile), true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode(file_get_contents($this->migrationUtil->getCacheDirectory().$jsonfile), true, 512, JSON_THROW_ON_ERROR);
 
         if (isset($data['error'])) {
             throw new Exception($data['error']);

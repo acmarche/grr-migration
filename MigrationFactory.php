@@ -22,11 +22,9 @@ use Grr\GrrBundle\Entity\TypeEntry;
 
 class MigrationFactory
 {
-    private MigrationUtil $migrationUtil;
-
-    public function __construct(MigrationUtil $migrationUtil)
-    {
-        $this->migrationUtil = $migrationUtil;
+    public function __construct(
+        private MigrationUtil $migrationUtil
+    ) {
     }
 
     public function createArea(array $data): Area

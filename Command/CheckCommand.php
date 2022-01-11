@@ -2,6 +2,7 @@
 
 namespace Grr\Migration\Command;
 
+use Grr\GrrBundle\Entity\Entry;
 use Grr\GrrBundle\Entry\Repository\EntryRepository;
 use Grr\Migration\MigrationChecker;
 use Grr\Migration\MigrationUtil;
@@ -19,24 +20,15 @@ class CheckCommand extends Command
      * @var string
      */
     protected static $defaultName = 'grr:check';
-    private MigrationChecker $migrationChecker;
     private ?SymfonyStyle $io = null;
     private ?OutputInterface $output = null;
-    /**
-     * @var EntryRepository
-     */
-    private EntryRepository $entryRepository;
-    private MigrationUtil $migrationUtil;
 
     public function __construct(
-        MigrationChecker $migrationChecker,
-        EntryRepository $entryRepository,
-        MigrationUtil $migrationUtil
+        private MigrationChecker $migrationChecker,
+        private EntryRepository $entryRepository,
+        private MigrationUtil $migrationUtil
     ) {
         parent::__construct();
-        $this->migrationChecker = $migrationChecker;
-        $this->entryRepository = $entryRepository;
-        $this->migrationUtil = $migrationUtil;
     }
 
     protected function configure(): void
@@ -56,7 +48,7 @@ class CheckCommand extends Command
         $what = $input->getArgument('what');
 
         $authorizations = $this->migrationChecker->checkAreaAndRoomAdministrator();
-        if (count($authorizations) > 0) {
+        if ([] !== $authorizations) {
             $io->warning('Ces authorizations sont en double');
             foreach ($authorizations as $authorization) {
                 $user = null !== $authorization['user'] ? $authorization['user']->getEmail() : '';
@@ -92,9 +84,14 @@ class CheckCommand extends Command
             $startTime = $this->migrationUtil->converToDateTime($data['start_time']);
             $endTime = $this->migrationUtil->converToDateTime($data['end_time']);
             $room = $this->migrationUtil->transformToRoom($rooms, $data['room_id']);
-            $repeatId = (int)$data['repeat_id'];
+            $repeatId = (int) $data['repeat_id'];
 
-            $args = ['startTime' => $startTime, 'endTime' => $endTime, 'name' => $name, 'room' => $room];
+            $args = [
+                'startTime' => $startTime,
+                'endTime' => $endTime,
+                'name' => $name,
+                'room' => $room,
+            ];
 
             if ($repeatId > 0) {
                 $periodicity = $periodicities[$repeatId];
@@ -105,7 +102,7 @@ class CheckCommand extends Command
                 $args
             );
 
-            if (null === $entry) {
+            if (! $entry instanceof Entry) {
                 ++$count;
                 $io->error($data['name'].' '.$startTime->format('d-m-Y'));
             } else {

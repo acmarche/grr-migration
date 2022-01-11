@@ -22,19 +22,11 @@ use Grr\GrrBundle\User\Repository\UserRepository;
 
 class MigrationChecker
 {
-
-    private UserRepository $userRepository;
-    private AuthorizationRepository $authorizationRepository;
-    private RoomRepository $roomRepository;
-
     public function __construct(
-        UserRepository $userRepository,
-        AuthorizationRepository $authorizationRepository,
-        RoomRepository $roomRepository
+        private UserRepository $userRepository,
+        private AuthorizationRepository $authorizationRepository,
+        private RoomRepository $roomRepository
     ) {
-        $this->userRepository = $userRepository;
-        $this->authorizationRepository = $authorizationRepository;
-        $this->roomRepository = $roomRepository;
     }
 
     /**
@@ -43,8 +35,8 @@ class MigrationChecker
      * de cet area.
      *
      * @return Area[][]|Room[][]|Authorization[][]|User[][]|null[][]
-     * @throws NonUniqueResultException
      *
+     * @throws NonUniqueResultException
      */
     public function checkAreaAndRoomAdministrator(): array
     {
