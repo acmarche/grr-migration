@@ -14,6 +14,7 @@ use Grr\Migration\MigrationFactory;
 use Grr\Migration\MigrationUtil;
 use Grr\Migration\RequestData;
 use RuntimeException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,12 +24,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(
+    name: 'grr:migration',
+    description: 'Add a short description for your command',
+)]
 class MigrationCommand extends Command
 {
-    /**
-     * @var string
-     */
-    protected static $defaultName = 'grr:migration';
     private ?SymfonyStyle $io = null;
     private ?array $rooms = null;
     private ?array $areas = null;

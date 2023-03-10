@@ -6,6 +6,7 @@ use Grr\GrrBundle\Entity\Entry;
 use Grr\GrrBundle\Entry\Repository\EntryRepository;
 use Grr\Migration\MigrationChecker;
 use Grr\Migration\MigrationUtil;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,12 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(
+    name: 'grr:check',
+    description: 'Add a short description for your command',
+)]
 class CheckCommand extends Command
 {
-    /**
-     * @var string
-     */
-    protected static $defaultName = 'grr:check';
     private ?SymfonyStyle $io = null;
     private ?OutputInterface $output = null;
 
@@ -34,7 +35,6 @@ class CheckCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Add a short description for your command')
             ->addArgument('what', InputArgument::OPTIONAL, 'Que voulez vous checker')
             ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description');
     }
