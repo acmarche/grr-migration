@@ -83,7 +83,8 @@ class MigrationFactory
 
     public function createEntry(array $resolveTypeEntries, array $data): Entry
     {
-        $entry = $entry = new Entry();
+        $entry = new Entry();
+        $entry = $entry;
         $entry->setName($this->migrationUtil->convertToUf8($data['name']));
         $entry->setStartTime($this->migrationUtil->converToDateTime($data['start_time']));
         $entry->setEndTime($this->migrationUtil->converToDateTime($data['end_time']));

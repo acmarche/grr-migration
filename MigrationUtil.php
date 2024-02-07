@@ -10,6 +10,7 @@
 
 namespace Grr\Migration;
 
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTime;
@@ -79,7 +80,7 @@ class MigrationUtil
         $tab = str_split(strtolower($display_days), 1);
 
         return array_map(
-            fn ($a): int => (int) preg_replace($pattern, $replacements, $a),
+            static fn($a): int => (int) preg_replace($pattern, $replacements, (string) $a),
             $tab
         );
     }
@@ -162,7 +163,7 @@ class MigrationUtil
         return 'actif' === $etat;
     }
 
-    public function transformPassword($user, $password): ?string
+    public function transformPassword(PasswordAuthenticatedUserInterface $user, $password): ?string
     {
         if ('' === $password || null === $password) {
             return null;
@@ -193,11 +194,12 @@ class MigrationUtil
         return [$role];
     }
 
-    public function checkUser($data): ?string
+    public function checkUser(array $data): ?string
     {
         if ('' == $data['email']) {
             return 'Pas de mail pour '.$data['login'];
         }
+
         if (null !== $this->userRepository->findOneBy([
             'email' => $data['email'],
         ])) {
@@ -224,6 +226,7 @@ class MigrationUtil
         if (null === $text) {
             return null;
         }
+
         $charset = mb_detect_encoding($text, null, true);
 
         //sf5
@@ -313,7 +316,7 @@ class MigrationUtil
 
     public function tranformToAuthorization(int $who_can_see): int
     {
-        $auth = match ($who_can_see) {
+        return match ($who_can_see) {
             0 => SettingsRoom::CAN_ADD_EVERY_BODY,
             1 => SettingsRoom::CAN_ADD_EVERY_CONNECTED,
             2 => SettingsRoom::CAN_ADD_EVERY_USER_ACTIVE,
@@ -323,11 +326,9 @@ class MigrationUtil
             6 => SettingsRoom::CAN_ADD_EVERY_GRR_ADMINISTRATOR,
             default => 0,
         };
-
-        return $auth;
     }
 
-    public function writeFile($fileName, $content): void
+    public function writeFile(string $fileName, $content): void
     {
         $fileHandler = fopen($this->getCacheDirectory().$fileName, 'w');
         fwrite($fileHandler, (string) $content);

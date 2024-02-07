@@ -50,7 +50,7 @@ class MigrationChecker
                 $rooms = $this->roomRepository->findByArea($area);
                 foreach ($rooms as $room) {
                     $admin = $this->authorizationRepository->findOneByUserAndRoom($user, $room);
-                    if (null !== $admin || $user->hasRole(SecurityRole::ROLE_GRR_ADMINISTRATOR)) {
+                    if ($admin instanceof Authorization || $user->hasRole(SecurityRole::ROLE_GRR_ADMINISTRATOR)) {
                         $result[$i]['authorization'] = $authorization;
                         $result[$i]['user'] = $user;
                         $result[$i]['area'] = $area;
@@ -73,6 +73,7 @@ class MigrationChecker
             $authorization = $data['authorization'];
             $this->authorizationRepository->remove($authorization);
         }
+
         $this->authorizationRepository->flush();
     }
 }

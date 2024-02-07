@@ -21,6 +21,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class RequestData
 {
     private ?HttpClientInterface $httpClient = null;
+
     private ?string $base_url = null;
 
     public function __construct(
@@ -114,9 +115,9 @@ class RequestData
 
         try {
             $response = $this->httpClient->request('GET', $this->base_url.$url, $args);
-        } catch (TransportExceptionInterface $e) {
+        } catch (TransportExceptionInterface $transportException) {
             return json_encode([
-                'error' => $e->getMessage(),
+                'error' => $transportException->getMessage(),
             ], JSON_THROW_ON_ERROR, 512);
         }
 
@@ -130,9 +131,9 @@ class RequestData
                     512
                 );
             }
-        } catch (TransportExceptionInterface $e) {
+        } catch (TransportExceptionInterface $transportException) {
             return json_encode([
-                'error' => $e->getMessage(),
+                'error' => $transportException->getMessage(),
             ], JSON_THROW_ON_ERROR, 512);
         }
 
@@ -147,13 +148,14 @@ class RequestData
                 ], JSON_THROW_ON_ERROR, 512);
             }
         }
+
         fclose($fileHandler);
 
         try {
             $this->checkDownload($jsonfile);
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             return json_encode([
-                'error' => $e->getMessage(),
+                'error' => $exception->getMessage(),
             ], JSON_THROW_ON_ERROR, 512);
         }
 
@@ -183,9 +185,9 @@ class RequestData
                     'error' => $e->getMessage(),
                 ], JSON_THROW_ON_ERROR, 512);
             }
-        } catch (TransportExceptionInterface $e) {
+        } catch (TransportExceptionInterface $transportException) {
             return json_encode([
-                'error' => $e->getMessage(),
+                'error' => $transportException->getMessage(),
             ], JSON_THROW_ON_ERROR, 512);
         }
     }
@@ -195,7 +197,7 @@ class RequestData
      *
      * @throws Exception
      */
-    private function checkDownload($jsonfile): void
+    private function checkDownload(string|array $jsonfile): void
     {
         $data = json_decode(file_get_contents($this->migrationUtil->getCacheDirectory().$jsonfile), true, 512, JSON_THROW_ON_ERROR);
 

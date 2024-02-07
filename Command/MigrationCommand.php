@@ -31,18 +31,25 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class MigrationCommand extends Command
 {
     private ?SymfonyStyle $io = null;
+
     private ?array $rooms = null;
+
     private ?array $areas = null;
+
     private ?OutputInterface $output = null;
+
     /**
      * Fait la correspondance entre l'ancien id et le nouveau id des rooms.
      */
     private array $resolveRooms = [];
+
     /**
      * Fait la correspondance entre l'ancien id et le nouveau id des types d'entrées.
      */
     private array $resolveTypeEntries = [];
+
     private array $repeats;
+
     private array $resolveRepeats = [];
 
     public function __construct(
@@ -76,21 +83,20 @@ class MigrationCommand extends Command
         $url = $input->getArgument('url');
 
         if (($parts = parse_url((string) $url)) && ! isset($parts['scheme'])) {
-            $this->io->error(sprintf('L\'url n\'est pas valide: %s', $url));
+            $this->io->error(sprintf("L'url n'est pas valide: %s", $url));
 
             return 1;
         }
 
         if (! $password) {
-            $question = new Question("Le mot de passe de $user: \n");
+            $question = new Question("Le mot de passe de {$user}: \n");
             $question->setHidden(true);
             $question->setMaxAttempts(5);
             $question->setValidator(
-                function ($password): string {
+                static function ($password) : string {
                     if (\strlen((string) $password) < 2) {
                         throw new RuntimeException('Le mot de passe ne peut être vide');
                     }
-
                     return $password;
                 }
             );
@@ -102,15 +108,13 @@ class MigrationCommand extends Command
             "A partir de quelle date voulez vous importer les entrées, par exemple: 2017-11-25. Laissez vide pour importer tout: \n"
         );
         $questionDate->setValidator(
-            function ($date) {
+            static function ($date) {
                 if (null === $date) {
                     return (int) $date;
                 }
-
                 if (! $date = DateTime::createFromFormat('Y-m-d', $date)) {
-                    throw new RuntimeException('La date n\'a pas un format valable: ');
+                    throw new RuntimeException("La date n'a pas un format valable: ");
                 }
-
                 return $date;
             }
         );
@@ -124,6 +128,7 @@ class MigrationCommand extends Command
         $purger = new ORMPurger($this->entityManager);
         //$purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
         $purger->purge();
+
         $this->migrationUtil->clearCache();
 
         $this->requestData->connect($url, $user, $password);
@@ -132,6 +137,7 @@ class MigrationCommand extends Command
             'Téléchargement des entries et periodicities dans le dossier: '.$this->migrationUtil->getCacheDirectory()
         );
         $this->io->newLine();
+
         $progressBar = new ProgressBar($output, 2);
         $progressBar->start();
 
@@ -150,14 +156,17 @@ class MigrationCommand extends Command
                 'date' => $date->format('Y-m-d'),
             ];
         }
+
         $result = json_decode($this->requestData->download('entry.php', $params), true, 512, JSON_THROW_ON_ERROR);
         if (isset($result['error'])) {
             $this->io->error($result['error']);
 
             return 1;
         }
+
         $progressBar->advance();
         $progressBar->finish();
+
         $this->io->newLine();
 
         $fileHandler = file_get_contents($this->migrationUtil->getCacheDirectory().'repeat.json');
@@ -206,6 +215,7 @@ class MigrationCommand extends Command
             $this->entityManager->persist($area);
             $this->handleRoom($area, $data['id']);
         }
+
         $this->entityManager->flush();
     }
 
@@ -271,7 +281,7 @@ class MigrationCommand extends Command
             $entry = $this->migrationFactory->createEntry($this->resolveTypeEntries, $data);
             $room = $this->migrationUtil->transformToRoom($this->resolveRooms, $data['room_id']);
 
-            if (null !== $room) {
+            if ($room instanceof Room) {
                 $entry->setRoom($room);
                 $this->entityManager->persist($entry);
                 $repeatId = (int) $data['repeat_id'];
@@ -293,6 +303,7 @@ class MigrationCommand extends Command
                 return;
             }
         }
+
         $this->entityManager->flush();
     }
 
@@ -301,11 +312,12 @@ class MigrationCommand extends Command
         if (isset($this->resolveRepeats[$id])) {
             $periodicity = $this->resolveRepeats[$id];
         } else {
-            $key = array_search($id, array_column($this->repeats, 'id'));
+            $key = array_search($id, array_column($this->repeats, 'id'), true);
             $repeat = $this->repeats[$key];
             $periodicity = $this->migrationFactory->createPeriodicity($entry, $repeat);
             $this->entityManager->persist($periodicity);
         }
+
         $entry->setPeriodicity($periodicity);
         //  $this->entityManager->flush();
         $this->resolveRepeats[$id] = $periodicity;
@@ -324,12 +336,14 @@ class MigrationCommand extends Command
                 $this->io->error('Utilisateur non trouvé pour l\'ajouter en tant que area admin:'.$data['username']);
                 continue;
             }
+
             $authorization->setUser($user);
             $area = $this->migrationUtil->transformToArea($this->areas, $data['id_area']);
             if (! $area instanceof Area) {
                 $this->io->error('Area non trouvé pour l\'ajouter en tant que area admin: '.$data['id_area']);
                 continue;
             }
+
             $authorization->setArea($area);
             $authorization->setRoom(null);
             $authorization->setIsAreaAdministrator(true);
@@ -353,6 +367,7 @@ class MigrationCommand extends Command
                 $this->io->note('Utilisateur non trouvé: '.$data['login']);
                 continue;
             }
+
             $authorization->setUser($user);
             $room = $this->migrationUtil->transformToRoom($this->resolveRooms, $data['id_room']);
 

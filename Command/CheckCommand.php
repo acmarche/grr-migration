@@ -22,6 +22,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CheckCommand extends Command
 {
     private ?SymfonyStyle $io = null;
+
     private ?OutputInterface $output = null;
 
     public function __construct(
@@ -43,6 +44,7 @@ class CheckCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $this->io = new SymfonyStyle($input, $output);
+
         $this->output = $output;
         $helper = $this->getHelper('question');
         $what = $input->getArgument('what');
@@ -57,6 +59,7 @@ class CheckCommand extends Command
 
                 $io->note($user.' ==> '.$area.' ==> '.$room." \n ");
             }
+
             $questionDelete = new ConfirmationQuestion("Les supprimer ? [y,N] \n", false);
             $delete = $helper->ask($input, $output, $questionDelete);
             if ($delete) {
@@ -109,6 +112,7 @@ class CheckCommand extends Command
                 // $io->success($entry->getName().' ==> '.$name);
             }
         }
+
         if (0 == $count) {
             $io->success('Toutes les entrées ont bien été importées');
         }
