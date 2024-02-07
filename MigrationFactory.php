@@ -23,7 +23,7 @@ use Grr\GrrBundle\Entity\TypeEntry;
 class MigrationFactory
 {
     public function __construct(
-        private MigrationUtil $migrationUtil
+        private readonly MigrationUtil $migrationUtil
     ) {
     }
 

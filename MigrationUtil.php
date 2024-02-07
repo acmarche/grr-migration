@@ -36,14 +36,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class MigrationUtil
 {
     public function __construct(
-        private UserPasswordHasherInterface $passwordEncoder,
-        private AreaRepositoryInterface $areaRepository,
-        private RoomRepositoryInterface $roomRepository,
-        private UserRepositoryInterface $userRepository,
-        private TypeEntryRepositoryInterface $typeEntryRepository,
-        private EntryRepositoryInterface $entryRepository,
-        private AuthorizationRepositoryInterface $authorizationRepository,
-        private ParameterBagInterface $parameterBag
+        private readonly UserPasswordHasherInterface $passwordEncoder,
+        private readonly AreaRepositoryInterface $areaRepository,
+        private readonly RoomRepositoryInterface $roomRepository,
+        private readonly UserRepositoryInterface $userRepository,
+        private readonly TypeEntryRepositoryInterface $typeEntryRepository,
+        private readonly EntryRepositoryInterface $entryRepository,
+        private readonly AuthorizationRepositoryInterface $authorizationRepository,
+        private readonly ParameterBagInterface $parameterBag
     ) {
     }
 
@@ -147,11 +147,7 @@ class MigrationUtil
             return null;
         }
 
-        if (isset($rooms[$roomId])) {
-            return $rooms[$roomId];
-        }
-
-        return null;
+        return $rooms[$roomId] ?? null;
     }
 
     public function transformToUser(string $username): ?User
@@ -235,7 +231,7 @@ class MigrationUtil
         //u('спасибо')->ascii();
 
         if ('UTF-8' == $charset) {
-            $txt = utf8_decode($text);
+            $txt = mb_convert_encoding($text, 'ISO-8859-1');
 
             return $text;
 
@@ -290,7 +286,7 @@ class MigrationUtil
     /**
      * @return DateTime|DateTimeImmutable
      */
-    public function converToDateTime(string $start_time): \DateTime
+    public function converToDateTime(string $start_time): DateTime
     {
         $date = Carbon::createFromTimestamp($start_time);
 
@@ -302,7 +298,7 @@ class MigrationUtil
      *
      * @return DateTime|DateTimeImmutable
      */
-    public function converToDateTimeFromString(string $dateString): \DateTime
+    public function converToDateTimeFromString(string $dateString): DateTime
     {
         $format = 'Y-m-d H:i:s';
         $date = Carbon::createFromFormat($format, $dateString);
@@ -312,11 +308,7 @@ class MigrationUtil
 
     public function convertToTypeEntry(array $resolveTypes, string $letter): ?TypeEntry
     {
-        if (isset($resolveTypes[$letter])) {
-            return $resolveTypes[$letter];
-        }
-
-        return null;
+        return $resolveTypes[$letter] ?? null;
     }
 
     public function tranformToAuthorization(int $who_can_see): int
@@ -338,7 +330,7 @@ class MigrationUtil
     public function writeFile($fileName, $content): void
     {
         $fileHandler = fopen($this->getCacheDirectory().$fileName, 'w');
-        fwrite($fileHandler, $content);
+        fwrite($fileHandler, (string) $content);
         fclose($fileHandler);
     }
 

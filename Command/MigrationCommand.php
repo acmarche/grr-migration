@@ -46,11 +46,11 @@ class MigrationCommand extends Command
     private array $resolveRepeats = [];
 
     public function __construct(
-        private RequestData $requestData,
-        private EntityManagerInterface $entityManager,
-        private MigrationUtil $migrationUtil,
-        private MigrationFactory $migrationFactory,
-        private PeriodicityDaysProvider $periodicityDaysProvider
+        private readonly RequestData $requestData,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly MigrationUtil $migrationUtil,
+        private readonly MigrationFactory $migrationFactory,
+        private readonly PeriodicityDaysProvider $periodicityDaysProvider
     ) {
         parent::__construct();
     }
@@ -75,7 +75,7 @@ class MigrationCommand extends Command
         $password = $input->getArgument('password');
         $url = $input->getArgument('url');
 
-        if (($parts = parse_url($url)) && ! isset($parts['scheme'])) {
+        if (($parts = parse_url((string) $url)) && ! isset($parts['scheme'])) {
             $this->io->error(sprintf('L\'url n\'est pas valide: %s', $url));
 
             return 1;
@@ -87,7 +87,7 @@ class MigrationCommand extends Command
             $question->setMaxAttempts(5);
             $question->setValidator(
                 function ($password): string {
-                    if (\strlen($password) < 2) {
+                    if (\strlen((string) $password) < 2) {
                         throw new RuntimeException('Le mot de passe ne peut être vide');
                     }
 

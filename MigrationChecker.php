@@ -23,9 +23,9 @@ use Grr\GrrBundle\User\Repository\UserRepository;
 class MigrationChecker
 {
     public function __construct(
-        private UserRepository $userRepository,
-        private AuthorizationRepository $authorizationRepository,
-        private RoomRepository $roomRepository
+        private readonly UserRepository $userRepository,
+        private readonly AuthorizationRepository $authorizationRepository,
+        private readonly RoomRepository $roomRepository
     ) {
     }
 

@@ -25,9 +25,9 @@ class CheckCommand extends Command
     private ?OutputInterface $output = null;
 
     public function __construct(
-        private MigrationChecker $migrationChecker,
-        private EntryRepository $entryRepository,
-        private MigrationUtil $migrationUtil
+        private readonly MigrationChecker $migrationChecker,
+        private readonly EntryRepository $entryRepository,
+        private readonly MigrationUtil $migrationUtil
     ) {
         parent::__construct();
     }

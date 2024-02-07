@@ -24,7 +24,7 @@ class RequestData
     private ?string $base_url = null;
 
     public function __construct(
-        private MigrationUtil $migrationUtil
+        private readonly MigrationUtil $migrationUtil
     ) {
     }
 
